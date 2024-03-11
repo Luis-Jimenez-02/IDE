@@ -8,17 +8,25 @@ import javax.swing.undo.UndoManager;
 
 public class IDEMain extends JFrame {
     private JTextArea textArea;
+    private JTextArea lineNumbersTA;
     private UndoManager undoManager;
     private JTree fileTree;
 
     public IDEMain() {
-        setTitle("Simple IDE");
+        setTitle("IDE");
         setSize(800, 600);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
         textArea = new JTextArea();
         JScrollPane scrollPane = new JScrollPane(textArea);
+
+        //Estilos para los numeros de linea
+        lineNumbersTA = new JTextArea();
+        lineNumbersTA.setEditable(false);
+        lineNumbersTA.setBackground(Color.LIGHT_GRAY);
+        lineNumbersTA.setFont(textArea.getFont());
+
 
         // Creamos el JTree y lo inicializamos con la estructura de archivos de la carpeta actual de trabajo
         File currentDirectory = new File(System.getProperty("user.dir"));
@@ -28,8 +36,18 @@ public class IDEMain extends JFrame {
 
         JScrollPane treeScrollPane = new JScrollPane(fileTree);
 
+        //Declaramos el SplitPAne para el arbol de archivos
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeScrollPane, scrollPane);
         splitPane.setResizeWeight(0.2);
+
+        //Creamos un Scroll Pane para los numeros de linea
+        JScrollPane lineNumbersSP = new JScrollPane(lineNumbersTA);
+        lineNumbersSP.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+
+        splitPane.setLeftComponent(treeScrollPane);
+        splitPane.setRightComponent(scrollPane);
+
+        scrollPane.setRowHeaderView(lineNumbersSP);
 
         add(splitPane, BorderLayout.CENTER);
 
@@ -39,6 +57,23 @@ public class IDEMain extends JFrame {
             @Override
             public void undoableEditHappened(UndoableEditEvent e) {
                 undoManager.addEdit(e.getEdit());
+            }
+        });
+
+        textArea.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e){
+                updateLineNumbers();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e){
+                updateLineNumbers();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e){
+                updateLineNumbers();
             }
         });
 
@@ -157,6 +192,16 @@ public class IDEMain extends JFrame {
                 }
             }
         }
+    }
+
+    private void updateLineNumbers(){
+        int totalLines = textArea.getLineCount();
+        StringBuilder numbersText = new StringBuilder();
+        for (int i = 1; i <= totalLines; i++){
+            numbersText.append(i).append("\n");
+        }
+
+        lineNumbersTA.setText(numbersText.toString());
     }
 
     public static void main(String[] args) {
