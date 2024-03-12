@@ -8,17 +8,25 @@ import javax.swing.undo.UndoManager;
 
 public class IDEMain extends JFrame {
     private JTextArea textArea;
+    private JTextArea lineNumbersTA;
     private UndoManager undoManager;
     private JTree fileTree;
 
     public IDEMain() {
-        setTitle("Simple IDE");
+        setTitle("IDE");
         setSize(800, 600);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
         textArea = new JTextArea();
         JScrollPane scrollPane = new JScrollPane(textArea);
+
+        //Estilos para los numeros de linea
+        lineNumbersTA = new JTextArea();
+        lineNumbersTA.setEditable(false);
+        lineNumbersTA.setBackground(Color.LIGHT_GRAY);
+        lineNumbersTA.setFont(textArea.getFont());
+
 
         // Creamos el JTree y lo inicializamos con la estructura de archivos de la carpeta actual de trabajo
         File currentDirectory = new File(System.getProperty("user.dir"));
@@ -28,8 +36,18 @@ public class IDEMain extends JFrame {
 
         JScrollPane treeScrollPane = new JScrollPane(fileTree);
 
+        //Declaramos el SplitPAne para el arbol de archivos
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeScrollPane, scrollPane);
         splitPane.setResizeWeight(0.2);
+
+        //Creamos un Scroll Pane para los numeros de linea
+        JScrollPane lineNumbersSP = new JScrollPane(lineNumbersTA);
+        lineNumbersSP.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+
+        splitPane.setLeftComponent(treeScrollPane);
+        splitPane.setRightComponent(scrollPane);
+
+        scrollPane.setRowHeaderView(lineNumbersSP);
 
         add(splitPane, BorderLayout.CENTER);
 
@@ -42,17 +60,46 @@ public class IDEMain extends JFrame {
             }
         });
 
+        textArea.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e){
+                updateLineNumbers();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e){
+                updateLineNumbers();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e){
+                updateLineNumbers();
+            }
+        });
+
+
+        //Titulos de la barra menu superior
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
         JMenu editMenu = new JMenu("Edit");
+        JMenu viewMenu = new JMenu("View");
 
+
+        //Elementos de File
         JMenuItem saveItem = new JMenuItem("Save");
         JMenuItem newItem = new JMenuItem("New");
         JMenuItem openItem = new JMenuItem("Open");
 
+        //Elementos de Edit
         JMenuItem undoItem = new JMenuItem("Undo");
         JMenuItem redoItem = new JMenuItem("Redo");
 
+        //Elementos de view
+        JMenuItem modeItem = new JMenuItem("toogle light/dark mode");
+        JMenuItem fontItem = new JMenuItem("Select Font Size");
+        JMenuItem appearanceItem = new JMenuItem("Appearance");
+
+        //Funcionalidades de los elementos de File
         saveItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -74,6 +121,7 @@ public class IDEMain extends JFrame {
             }
         });
 
+        //Funcionalidad de los elementos de Edit
         undoItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -88,13 +136,38 @@ public class IDEMain extends JFrame {
             }
         });
 
+        //Funcionalidades de los elementos de view menu
+        modeItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e){
+                if(textArea.getBackground().equals(Color.WHITE)){
+                    //Cambiar a dark
+                    textArea.setBackground(Color.BLACK);
+                    textArea.setForeground(Color.WHITE);
+                    fileTree.setBackground(Color.BLACK);
+                    fileTree.setForeground(Color.WHITE);
+                }else{
+                    //Cambiar a white
+                    textArea.setBackground(Color.WHITE);
+                    textArea.setForeground(Color.BLACK);
+                    fileTree.setBackground(Color.WHITE);
+                    fileTree.setForeground(Color.BLACK);
+                }
+            }
+        });
+
+        //Mostarr los titulos y elementos
         fileMenu.add(newItem);
         fileMenu.add(openItem);
         fileMenu.add(saveItem);
         editMenu.add(undoItem);
         editMenu.add(redoItem);
+        viewMenu.add(modeItem);
+        viewMenu.add(fontItem);
+        viewMenu.add(appearanceItem);
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
+        menuBar.add(viewMenu);
         setJMenuBar(menuBar);
     }
 
@@ -157,6 +230,16 @@ public class IDEMain extends JFrame {
                 }
             }
         }
+    }
+
+    private void updateLineNumbers(){
+        int totalLines = textArea.getLineCount();
+        StringBuilder numbersText = new StringBuilder();
+        for (int i = 1; i <= totalLines; i++){
+            numbersText.append(i).append("\n");
+        }
+
+        lineNumbersTA.setText(numbersText.toString());
     }
 
     public static void main(String[] args) {
