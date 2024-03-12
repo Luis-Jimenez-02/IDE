@@ -7,5 +7,3 @@ Este proyecto fue creado debido a una matería de la universidad, en teoria se c
 
 This project was created as a university subject assignment. In theory, it will be complemented with a compiler. At the moment, I am unsure about which language I will use for the compiler, but I am progressing with the IDE. It won't be very elaborate, but it can serve as inspiration for others.
 
-
-~Luis Jimenez aka "Mr omicron"
