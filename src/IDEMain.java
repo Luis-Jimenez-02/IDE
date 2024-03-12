@@ -77,17 +77,29 @@ public class IDEMain extends JFrame {
             }
         });
 
+
+        //Titulos de la barra menu superior
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
         JMenu editMenu = new JMenu("Edit");
+        JMenu viewMenu = new JMenu("View");
 
+
+        //Elementos de File
         JMenuItem saveItem = new JMenuItem("Save");
         JMenuItem newItem = new JMenuItem("New");
         JMenuItem openItem = new JMenuItem("Open");
 
+        //Elementos de Edit
         JMenuItem undoItem = new JMenuItem("Undo");
         JMenuItem redoItem = new JMenuItem("Redo");
 
+        //Elementos de view
+        JMenuItem modeItem = new JMenuItem("toogle light/dark mode");
+        JMenuItem fontItem = new JMenuItem("Select Font Size");
+        JMenuItem appearanceItem = new JMenuItem("Appearance");
+
+        //Funcionalidades de los elementos de File
         saveItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -109,6 +121,7 @@ public class IDEMain extends JFrame {
             }
         });
 
+        //Funcionalidad de los elementos de Edit
         undoItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -123,13 +136,38 @@ public class IDEMain extends JFrame {
             }
         });
 
+        //Funcionalidades de los elementos de view menu
+        modeItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e){
+                if(textArea.getBackground().equals(Color.WHITE)){
+                    //Cambiar a dark
+                    textArea.setBackground(Color.BLACK);
+                    textArea.setForeground(Color.WHITE);
+                    fileTree.setBackground(Color.BLACK);
+                    fileTree.setForeground(Color.WHITE);
+                }else{
+                    //Cambiar a white
+                    textArea.setBackground(Color.WHITE);
+                    textArea.setForeground(Color.BLACK);
+                    fileTree.setBackground(Color.WHITE);
+                    fileTree.setForeground(Color.BLACK);
+                }
+            }
+        });
+
+        //Mostarr los titulos y elementos
         fileMenu.add(newItem);
         fileMenu.add(openItem);
         fileMenu.add(saveItem);
         editMenu.add(undoItem);
         editMenu.add(redoItem);
+        viewMenu.add(modeItem);
+        viewMenu.add(fontItem);
+        viewMenu.add(appearanceItem);
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
+        menuBar.add(viewMenu);
         setJMenuBar(menuBar);
     }
 
