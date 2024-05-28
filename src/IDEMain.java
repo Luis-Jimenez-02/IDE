@@ -11,6 +11,12 @@ public class IDEMain extends JFrame {
     private JTextArea lineNumbersTA;
     private UndoManager undoManager;
     private JTree fileTree;
+    private JTextArea errorTextArea;
+    private JTextArea resultTextArea;
+    private JTextArea lexicoTextArea;
+    private JTextArea sintacticoTextArea;
+    private JTextArea semanticoTextArea;
+    private JTextArea intermedioTextArea;
 
     public IDEMain() {
         setTitle("IDE");
@@ -38,7 +44,7 @@ public class IDEMain extends JFrame {
 
         //Declaramos el SplitPAne para el arbol de archivos
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeScrollPane, scrollPane);
-        splitPane.setResizeWeight(0.2);
+        splitPane.setResizeWeight(0.1);
 
         //Creamos un Scroll Pane para los numeros de linea
         JScrollPane lineNumbersSP = new JScrollPane(lineNumbersTA);
@@ -83,6 +89,7 @@ public class IDEMain extends JFrame {
         JMenu fileMenu = new JMenu("File");
         JMenu editMenu = new JMenu("Edit");
         JMenu viewMenu = new JMenu("View");
+        JMenu compilarMenu = new JMenu("Compile");
 
 
         //Elementos de File
@@ -98,6 +105,9 @@ public class IDEMain extends JFrame {
         JMenuItem modeItem = new JMenuItem("toogle light/dark mode");
         JMenuItem fontItem = new JMenuItem("Select Font Size");
         JMenuItem appearanceItem = new JMenuItem("Appearance");
+
+        //Elementos de compilar
+        JMenuItem compilarItem = new JMenuItem("complilar"); 
 
         //Funcionalidades de los elementos de File
         saveItem.addActionListener(new ActionListener() {
@@ -165,10 +175,39 @@ public class IDEMain extends JFrame {
         viewMenu.add(modeItem);
         viewMenu.add(fontItem);
         viewMenu.add(appearanceItem);
+        compilarMenu.add(compilarItem);
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
         menuBar.add(viewMenu);
+        menuBar.add(compilarMenu);
         setJMenuBar(menuBar);
+
+        // Sección de Errores y Resultados
+        JTabbedPane tabbedPane = new JTabbedPane();
+        errorTextArea = new JTextArea();
+        resultTextArea = new JTextArea();
+
+        tabbedPane.addTab("Errores", new JScrollPane(errorTextArea));
+        tabbedPane.addTab("Resultados", new JScrollPane(resultTextArea));
+
+        add(tabbedPane, BorderLayout.SOUTH);
+
+        //Seccion de analisis
+        JTabbedPane tabbedPane2 = new JTabbedPane();
+        lexicoTextArea = new JTextArea();
+        sintacticoTextArea = new JTextArea();
+        semanticoTextArea = new JTextArea();
+        intermedioTextArea = new JTextArea();
+
+        tabbedPane2.addTab("Lexico", new JScrollPane(lexicoTextArea));
+        tabbedPane2.addTab("Sintactico", new JScrollPane(sintacticoTextArea));
+        tabbedPane2.addTab("Semantico", new JScrollPane(semanticoTextArea));
+        tabbedPane2.addTab("Codigo intermedio", new JScrollPane(intermedioTextArea));
+
+        JSplitPane splitPane2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, splitPane, tabbedPane2);
+        splitPane2.setResizeWeight(0.8);
+
+        add(splitPane2, BorderLayout.CENTER);
     }
 
     private void saveFile() {
